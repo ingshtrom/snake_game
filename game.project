@@ -21,5 +21,5 @@ app_icon = /assets/appicons/appicon.icns
 [display]
 high_dpi = 1
 height = 800
-width = 764
+width = 800
 
