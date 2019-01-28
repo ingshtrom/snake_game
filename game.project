@@ -1,5 +1,6 @@
 [project]
 title = snake
+write_log = 0
 
 [bootstrap]
 main_collection = /main/main.collectionc
@@ -19,4 +20,6 @@ app_icon = /assets/appicons/appicon.icns
 
 [display]
 high_dpi = 1
+height = 800
+width = 764
 

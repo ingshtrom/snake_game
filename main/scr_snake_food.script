@@ -1,0 +1,6 @@
+function on_message(self, message_id, message, sender)
+	if message_id == hash('collision_response') and message.other_id == hash('/go_snake') then
+		msg.post('/go_factory_snake_food#scr_factory_snake_food', 'new_snake_food')
+		go.delete()
+	end
+end

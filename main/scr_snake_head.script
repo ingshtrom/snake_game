@@ -1,10 +1,15 @@
 function init(self)
 	msg.post(".", "acquire_input_focus")
 	
-	self.speed = 150
+	self.speed = 100
 	self.input = vmath.vector3()
 	self.dir = vmath.vector3(1, 0, 0)
 	self.moving = true -- not set by the player, it's for when we fail or pause
+	self.next_obj = nil
+end
+
+function final(self)
+	msg.post(".", "release_input_focus")
 end
 
 function update(self, dt)
@@ -17,13 +22,14 @@ function update(self, dt)
 		local pos = go.get_position()
 		pos = pos + self.dir * self.speed * dt
 		go.set_position(pos)
-		print(pos)
 	end
 end
 
 function on_message(self, message_id, message, sender)
-	-- Add message-handling code here
-	-- Remove this function if not needed
+	if message_id == hash('collision_response') and message.other_id == hash('/go_perimeter') then
+		print('collision!', message.other_id, sender)
+		go.set_position(vmath.vector3(400, 400, 0))
+    end
 end
 
 function on_input(self, action_id, action)

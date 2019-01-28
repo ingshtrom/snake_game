@@ -1,0 +1,22 @@
+local x_min, x_max = 50, 750
+local y_min, y_max = 50, 750
+
+math.randomseed(os.time())
+
+function gen_snake_food()
+	local position = go.get_position()
+	position.x = math.random(x_min, x_max)
+	position.y = math.random(y_min, y_max)
+	factory.create('#factory_snake_food', position, nil, nil, 0.25)
+end
+
+function init(self)
+	gen_snake_food()
+end
+
+function on_message(self, message_id, message, sender)
+	print('received message in factory_snake_food. ', message_id)
+	if message_id == hash('new_snake_food') then
+		gen_snake_food()
+	end
+end
