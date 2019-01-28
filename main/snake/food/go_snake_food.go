@@ -1,6 +1,6 @@
 components {
   id: "scr_snake_food"
-  component: "/main/scr_snake_food.script"
+  component: "/main/snake/food/scr_snake_food.script"
   position {
     x: 0.0
     y: 0.0
