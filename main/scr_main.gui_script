@@ -1,6 +1,13 @@
-function init(self)
+local function initialize(self)
+	self.state = 'running' -- other options are 'game-end'
 	self.score = 0
-	self.score_node = gui.get_node("score")
+	self.score_node = gui.get_node('score')
+	self.game_end_overlay = gui.get_node('game_end_overlay')
+	self.game_end_instructions = gui.get_node('game_end_instructions')
+end
+
+function init(self)
+	initialize(self)
 end
 
 local function scale_down(self, node)
@@ -9,11 +16,40 @@ local function scale_down(self, node)
 end
 
 function on_message(self, message_id, message, sender)
-	if message_id == hash("add_score") then
+	if message_id == hash('add_score') then
 		local s = 1.2
 		self.score = self.score + message.amount
 		gui.set_text(self.score_node, tostring(self.score))
 		gui.animate(self.score_node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 0.1, 0.0, scale_down)
+	elseif message_id == hash('game_end') and self.state ~= 'game-end' then
+		print('game_end receivied from gui script')
+		local s = 5.0
+		gui.animate(self.game_end_overlay, gui.PROP_COLOR, vmath.vector4(1, 0, 0, 0.75), gui.EASING_LINEAR, 1.0)
+		gui.animate(self.score_node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 2.0, 1.0)
+		gui.animate(self.score_node, gui.PROP_POSITION, vmath.vector4(400, 400, 0, 0), gui.EASING_OUT, 2.0, 1.0)
+		gui.animate(self.game_end_instructions, gui.PROP_COLOR, vmath.vector4(1, 1, 1, 1), gui.EASING_LINEAR, 1.0, 3.0, nil, gui.PLAYBACK_LOOP_PINGPONG)
+		self.state = 'game-end'
+		msg.post(".", "acquire_input_focus")
+	elseif message_id == hash('game_restart') then
+		print('game_restart received from gui script')
+		local s = 1.0
+		gui.set_text(self.score_node, tostring(self.score))
+		gui.set_position(self.score_node, vmath.vector3(400, 785, 0))
+		gui.set_scale(self.score_node, vmath.vector4(1, 1, 1, 0))
+		gui.cancel_animation(self.game_end_instructions, gui.PROP_COLOR)
+		gui.set_color(self.game_end_instructions, vmath.vector4(0, 0, 0, 0))
+		gui.set_color(self.game_end_overlay, vmath.vector4(0, 0, 0, 0))
+		self.state = 'running'
+		msg.post(".", "release_input_focus")
 	end
 end
+
+function on_input(self, action_id, action)
+	if action_id == hash('continue') then
+		initialize(self)
+		msg.post('.', 'game_restart')
+		msg.post('/go_snake#snake', 'new_game')
+	end
+end
+
 

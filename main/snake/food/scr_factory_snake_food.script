@@ -7,7 +7,7 @@ function gen_snake_food()
 	local position = go.get_position()
 	position.x = math.random(x_min, x_max)
 	position.y = math.random(y_min, y_max)
-	factory.create('#factory', position, nil, nil, 0.25)
+	factory.create('#factory', position, nil, nil, 0.5)
 end
 
 function init(self)

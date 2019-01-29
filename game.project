@@ -23,3 +23,6 @@ high_dpi = 1
 height = 800
 width = 800
 
+[sprite]
+max_count = 1024
+

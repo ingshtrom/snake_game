@@ -1,25 +1,30 @@
-function init(self)
+local start_speed = 100
+local speed_increment = 2.5
+local body_frames_to_add = 15
+
+local function initialize(self)
 	msg.post(".", "acquire_input_focus")
 	
-	self.speed = 100
+	self.speed = start_speed
 	self.input = vmath.vector3()
 	self.dir = vmath.vector3(1, 0, 0)
-	self.moving = true -- not set by the player, it's for when we fail or pause
+	self.is_moving = true -- not set by the player, it's for when we fail or pause
 	self.spawned_body_parts = {}
 	self.previous_locations = {}
+
+
+	go.set_position(vmath.vector3(400, 400, 0))
+end
+
+function init(self)
+	initialize(self)
 end
 
 function update_body_part_position(self, prev_pos)
 	table.insert(self.previous_locations, prev_pos)
 	table.remove(self.previous_locations, 1)
 
-	-- for x, y in ipairs(self.previous_locations) do
-	-- 	print('previous_locations', x, y)
-	-- end
-
 	for index, bp_id in ipairs(self.spawned_body_parts) do
-		local prev_pos = self.previous_locations[index]
-		print('setting body position', prev_pos, bp_id)
 		go.set_position(self.previous_locations[index], bp_id)
 	end
 end
@@ -29,7 +34,7 @@ function final(self)
 end
 
 function update(self, dt)
-	if self.moving then
+	if self.is_moving then
 		if vmath.length_sqr(self.input) == 0 then
 			self.input = self.dir
 		else
@@ -45,16 +50,25 @@ end
 function on_message(self, message_id, message, sender)
 	if message_id == hash('collision_response') then
 		if message.other_id == hash('/go_perimeter') then
-			print('collision!', message.other_id, sender)
-			go.set_position(vmath.vector3(400, 400, 0))
+			-- print('collision!', message.other_id, sender)
+			self.is_moving = false
+			msg.post('/go_gui#main', 'game_end')
 		elseif message.group == hash('food') then
-			print('collision with food!')
+			-- print('collision with food!')
 			local pos = go.get_position()
-			local body_part_id = factory.create('go_factory_snake_body#factory', pos, nil, nil, 0.25)
-			table.insert(self.spawned_body_parts, body_part_id)
-			table.insert(self.previous_locations, go.get_position())
+			for i=1,body_frames_to_add,1 do
+				local body_part_id = factory.create('go_factory_snake_body#factory', pos, nil, nil, 0.5)
+				table.insert(self.spawned_body_parts, body_part_id)
+				table.insert(self.previous_locations, go.get_position())
+				self.speed = self.speed + speed_increment
+			end
 		end
-    end
+	elseif message_id == hash('new_game') then
+		for _, id in ipairs(self.spawned_body_parts) do
+			go.delete(id)
+		end
+		initialize(self)
+	end
 end
 
 function on_input(self, action_id, action)
