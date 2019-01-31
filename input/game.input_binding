@@ -18,3 +18,7 @@ key_trigger {
   input: KEY_ENTER
   action: "continue"
 }
+key_trigger {
+  input: KEY_SPACE
+  action: "continue"
+}

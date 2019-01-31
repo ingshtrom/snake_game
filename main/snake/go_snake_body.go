@@ -13,14 +13,9 @@ components {
     w: 1.0
   }
 }
-embedded_components {
-  id: "sprite"
-  type: "sprite"
-  data: "tile_set: \"/main/sprites.atlas\"\n"
-  "default_animation: \"white_square\"\n"
-  "material: \"/builtins/materials/sprite.material\"\n"
-  "blend_mode: BLEND_MODE_ALPHA\n"
-  ""
+components {
+  id: "particles"
+  component: "/main/snake/pfx_snake_head.particlefx"
   position {
     x: 0.0
     y: 0.0

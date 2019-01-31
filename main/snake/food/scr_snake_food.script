@@ -2,6 +2,7 @@ local score_amount = 1
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash('collision_response') and message.other_id == hash('/go_snake') then
+		particlefx.play("#particles")
 		msg.post('/go_gui#main', 'add_score', {amount = score_amount})
 		msg.post('/go_factory_snake_food#factory_controller', 'new_snake_food')
 		go.delete()

@@ -1,3 +1,8 @@
+local function anim_cb(self, node) 
+	print('acquiring input focus for gui')
+	msg.post('.', 'acquire_input_focus')
+end
+
 local function initialize(self)
 	self.state = 'running' -- other options are 'game-end'
 	self.score = 0
@@ -26,10 +31,9 @@ function on_message(self, message_id, message, sender)
 		local s = 5.0
 		gui.animate(self.game_end_overlay, gui.PROP_COLOR, vmath.vector4(1, 0, 0, 0.75), gui.EASING_LINEAR, 1.0)
 		gui.animate(self.score_node, gui.PROP_SCALE, vmath.vector4(s, s, s, 0), gui.EASING_OUT, 2.0, 1.0)
-		gui.animate(self.score_node, gui.PROP_POSITION, vmath.vector4(400, 400, 0, 0), gui.EASING_OUT, 2.0, 1.0)
+		gui.animate(self.score_node, gui.PROP_POSITION, vmath.vector4(400, 400, 0, 0), gui.EASING_OUT, 2.0, 1.0, anim_cb)
 		gui.animate(self.game_end_instructions, gui.PROP_COLOR, vmath.vector4(1, 1, 1, 1), gui.EASING_LINEAR, 1.0, 3.0, nil, gui.PLAYBACK_LOOP_PINGPONG)
 		self.state = 'game-end'
-		msg.post(".", "acquire_input_focus")
 	elseif message_id == hash('game_restart') then
 		print('game_restart received from gui script')
 		local s = 1.0

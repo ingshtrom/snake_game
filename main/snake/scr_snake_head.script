@@ -1,5 +1,5 @@
-local start_speed = 100
-local speed_increment = 2.5
+local start_speed = 150
+local speed_increment = 10
 local body_parts_to_add = 5
 
 local function dump(o)
@@ -23,11 +23,11 @@ end
 
 local function initialize(self)
 	msg.post(".", "acquire_input_focus")
-	
+	particlefx.play("#particles")
 	self.speed = start_speed
 	self.input = vmath.vector3()
 	self.dir = vmath.vector3(1, 0, 0)
-	self.is_moving = true -- not set by the player, it's for when we fail or pause
+	self.is_paused = false
 	-- table of body part ids
 	--[[
 	{
@@ -114,7 +114,7 @@ function update(self, dt)
 		self.should_add_body_part = false
 	end
 
-	if self.is_moving then
+	if self.is_paused == false then
 		self.accumulator = self.accumulator + (self.speed * dt)
 		while self.accumulator >= 1 do
 			local prev_pos = go.get_position()
@@ -141,22 +141,23 @@ end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash('collision_response') then
-		if message.other_id == hash('/go_perimeter') then
-			-- print('collision!', message.other_id, sender)
-			self.is_moving = false
+		if message.other_id == hash('/go_perimeter') and self.is_paused == false then
+			self.is_paused = true
 			msg.post('/go_gui#main', 'game_end')
 		elseif message.group == hash('food') then
 			-- print('collision with food!')
 			self.should_add_body_part = true
 			self.speed = self.speed + speed_increment
-		elseif message.group == hash('snake_body') then
-			print('collision with body_part', message.other_id)
-			self.is_moving = false
+		elseif message.group == hash('snake_body') and self.is_paused == false then
+			-- print('collision with body_part', message.other_id)
+			self.is_paused = true
 			msg.post('/go_gui#main', 'game_end')
 		end
 	elseif message_id == hash('new_game') then
-		for _, id in ipairs(self.spawned_body_parts) do
-			go.delete(id)
+		for index, bp in ipairs(self.spawned_body_parts) do
+			-- print('would delete', id, dump(id))
+			go.delete(bp.id)
+			table.remove(self.spawned_body_parts, index)
 		end
 		initialize(self)
 	end

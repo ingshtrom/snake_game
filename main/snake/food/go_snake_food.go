@@ -13,6 +13,21 @@ components {
     w: 1.0
   }
 }
+components {
+  id: "particles"
+  component: "/main/snake/food/pfx_snake_food.particlefx"
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+}
 embedded_components {
   id: "sprite"
   type: "sprite"
