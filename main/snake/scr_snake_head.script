@@ -1,6 +1,25 @@
 local start_speed = 100
 local speed_increment = 2.5
-local body_frames_to_add = 15
+local body_parts_to_add = 5
+
+local function dump(o)
+   if type(o) == 'table' then
+      local s = '{ '
+      for k,v in pairs(o) do
+         if type(k) ~= 'number' then k = '"'..k..'"' end
+         s = s ..k..' = ' .. dump(v) .. ','
+      end
+      return s .. '} '
+   else
+      return tostring(o)
+   end
+end
+
+local function are_vectors_equal(v1, v2)
+	local x_equal = (v1.x - v2.x) == 0
+	local y_equal = (v1.y - v2.y) == 0
+	return x_equal and y_equal
+end
 
 local function initialize(self)
 	msg.post(".", "acquire_input_focus")
@@ -9,10 +28,19 @@ local function initialize(self)
 	self.input = vmath.vector3()
 	self.dir = vmath.vector3(1, 0, 0)
 	self.is_moving = true -- not set by the player, it's for when we fail or pause
+	-- table of body part ids
+	--[[
+	{
+		'id' = url
+		'dir' = vector3 (normalized),
+		'pivots' = table { pos = vector3, dir = vector3 (normalized) }
+	},
+	...
+
+	]]--
 	self.spawned_body_parts = {}
-	self.previous_locations = {}
-
-
+	self.accumulator = 0
+	self.should_add_body_part = false
 	go.set_position(vmath.vector3(400, 400, 0))
 end
 
@@ -20,12 +48,37 @@ function init(self)
 	initialize(self)
 end
 
-function update_body_part_position(self, prev_pos)
-	table.insert(self.previous_locations, prev_pos)
-	table.remove(self.previous_locations, 1)
+function update_pivot_points(self, pivot, dir)
+	print('adding pivot', pivot, dir)
+	print('body parts', dump(self.spawned_body_parts))
+	self.last_pivot = { pos = pivot, dir = dir }
+	for _, bp in ipairs(self.spawned_body_parts) do
+		print('adding pivot to spawned_body_parts', bp.id)
+		table.insert(bp.pivots, { pos = pivot, dir = dir })
+	end
+end
 
-	for index, bp_id in ipairs(self.spawned_body_parts) do
-		go.set_position(self.previous_locations[index], bp_id)
+function update_body_part_positions(self, accumulator_int)
+	for _, bp in ipairs(self.spawned_body_parts) do
+		local id = bp.id
+		local pos = go.get_position(id)
+		local index_to_remove = -1
+		for i, p in ipairs(bp.pivots) do
+			result = are_vectors_equal(p.pos, pos)
+			print('checking if we hit a pivot', id, pos, p.pos, result)
+			if result then
+				bp.dir = p.dir
+				index_to_remove = i
+			end
+		end
+
+		local dir = bp.dir
+
+		if index_to_remove > 0 then
+			table.remove(bp.pivots, index_to_remove)
+		end
+
+		go.set_position(pos + dir * accumulator_int, id)
 	end
 end
 
@@ -34,16 +87,55 @@ function final(self)
 end
 
 function update(self, dt)
-	if self.is_moving then
-		if vmath.length_sqr(self.input) == 0 then
-			self.input = self.dir
-		else
-			self.dir = vmath.normalize(self.input)
+	if self.should_add_body_part then
+		local pos = go.get_position()
+		local dir = self.dir
+		if #self.spawned_body_parts > 0 then
+			bp = self.spawned_body_parts[#self.spawned_body_parts]
+			pos = go.get_position(bp.id)
+			dir = bp.dir
+			print('putting new body part at location and dir', pos, dir)
 		end
-		local prev_pos = go.get_position()
-		local next_pos = prev_pos + self.dir * self.speed * dt
-		go.set_position(next_pos)
-		update_body_part_position(self, prev_pos)
+		pos = pos + (-16 * dir)
+		local new_body_part_id = factory.create('go_factory_snake_body#factory', pos, nil, nil, 0.5)
+		local new_body_part = {
+			id = new_body_part_id,
+			dir = dir,
+			pivots = {}
+		}
+		if #self.spawned_body_parts > 0 then
+			for _, p in ipairs(self.spawned_body_parts[#self.spawned_body_parts].pivots) do
+				print('adding pivot from last body_part', new_body_part.id, dump(p))
+				table.insert(new_body_part.pivots, p)
+			end
+		end
+		table.insert(self.spawned_body_parts, new_body_part)
+		print('all body parts after spawning', dump(self.spawned_body_parts))
+		self.should_add_body_part = false
+	end
+
+	if self.is_moving then
+		self.accumulator = self.accumulator + (self.speed * dt)
+		while self.accumulator >= 1 do
+			local prev_pos = go.get_position()
+
+			if vmath.length_sqr(self.input) ~= 0 then
+				normalized_input = vmath.normalize(self.input)
+				-- determine if they are in the same direction
+				if are_vectors_equal(self.dir, normalized_input) == false then
+					update_pivot_points(self, prev_pos, normalized_input)
+				end
+
+				self.dir = normalized_input
+			end
+			-- local accumulator_int, accumulator_remainder = math.modf(self.accumulator)
+			local next_pos = prev_pos + self.dir
+			go.set_position(next_pos)
+			-- update_body_part_positions(self, accumulator_int)
+			update_body_part_positions(self, 1)
+
+			self.accumulator = self.accumulator - 1
+		end
 	end
 end
 
@@ -54,14 +146,9 @@ function on_message(self, message_id, message, sender)
 			self.is_moving = false
 			msg.post('/go_gui#main', 'game_end')
 		elseif message.group == hash('food') then
-			-- print('collision with food!')
-			local pos = go.get_position()
-			for i=1,body_frames_to_add,1 do
-				local body_part_id = factory.create('go_factory_snake_body#factory', pos, nil, nil, 0.5)
-				table.insert(self.spawned_body_parts, body_part_id)
-				table.insert(self.previous_locations, go.get_position())
-				self.speed = self.speed + speed_increment
-			end
+			print('collision with food!')
+			self.should_add_body_part = true
+			self.speed = self.speed + speed_increment
 		end
 	elseif message_id == hash('new_game') then
 		for _, id in ipairs(self.spawned_body_parts) do
