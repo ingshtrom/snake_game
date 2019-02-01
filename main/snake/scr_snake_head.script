@@ -155,10 +155,9 @@ function on_message(self, message_id, message, sender)
 		end
 	elseif message_id == hash('new_game') then
 		for index, bp in ipairs(self.spawned_body_parts) do
-			-- print('would delete', id, dump(id))
 			go.delete(bp.id)
-			table.remove(self.spawned_body_parts, index)
 		end
+		self.spawned_body_parts = {}
 		initialize(self)
 	end
 end
