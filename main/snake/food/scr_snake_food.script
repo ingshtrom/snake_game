@@ -1,5 +1,9 @@
 local score_amount = 1
 
+function init(self)
+	particlefx.play("#particles_main")
+end
+
 function on_message(self, message_id, message, sender)
 	if message_id == hash('collision_response') and message.other_id == hash('/go_snake') then
 		particlefx.play("#particles")

@@ -19,7 +19,7 @@ components {
   position {
     x: 0.0
     y: 0.0
-    z: 0.0
+    z: 2.0
   }
   rotation {
     x: 0.0
@@ -28,14 +28,9 @@ components {
     w: 1.0
   }
 }
-embedded_components {
-  id: "sprite"
-  type: "sprite"
-  data: "tile_set: \"/main/sprites.atlas\"\n"
-  "default_animation: \"yellow_square\"\n"
-  "material: \"/builtins/materials/sprite.material\"\n"
-  "blend_mode: BLEND_MODE_ALPHA\n"
-  ""
+components {
+  id: "particles_main"
+  component: "/main/snake/food/pfx_snake_food_main.particlefx"
   position {
     x: 0.0
     y: 0.0
@@ -60,7 +55,7 @@ embedded_components {
   "mask: \"snake\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
-  "    shape_type: TYPE_BOX\n"
+  "    shape_type: TYPE_SPHERE\n"
   "    position {\n"
   "      x: 0.0\n"
   "      y: 0.0\n"
@@ -73,11 +68,9 @@ embedded_components {
   "      w: 1.0\n"
   "    }\n"
   "    index: 0\n"
-  "    count: 3\n"
+  "    count: 1\n"
   "  }\n"
-  "  data: 25.0\n"
-  "  data: 25.0\n"
-  "  data: 0.5\n"
+  "  data: 32.0\n"
   "}\n"
   "linear_damping: 0.0\n"
   "angular_damping: 0.0\n"
