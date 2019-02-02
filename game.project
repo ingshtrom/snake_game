@@ -26,3 +26,7 @@ width = 800
 [sprite]
 max_count = 1024
 
+[particle_fx]
+max_count = 500
+max_particle_count = 20000
+
