@@ -1,10 +1,10 @@
-name: "main"
+name: "game"
 scale_along_z: 0
 embedded_instances {
   id: "go_snake"
   data: "components {\n"
   "  id: \"snake\"\n"
-  "  component: \"/main/snake/scr_snake_head.script\"\n"
+  "  component: \"/main/game/snake/scr_snake_head.script\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"
@@ -19,7 +19,7 @@ embedded_instances {
   "}\n"
   "components {\n"
   "  id: \"particles\"\n"
-  "  component: \"/main/snake/pfx_snake_head.particlefx\"\n"
+  "  component: \"/main/game/snake/pfx_snake_head.particlefx\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"
@@ -82,7 +82,7 @@ embedded_instances {
   "embedded_components {\n"
   "  id: \"factory\"\n"
   "  type: \"factory\"\n"
-  "  data: \"prototype: \\\"/main/snake/food/go_snake_food.go\\\"\\n"
+  "  data: \"prototype: \\\"/main/game/snake/food/go_snake_food.go\\\"\\n"
   "load_dynamically: false\\n"
   "\"\n"
   "  position {\n"
@@ -243,7 +243,7 @@ embedded_instances {
   id: "go_factory_snake_food"
   data: "components {\n"
   "  id: \"factory_controller\"\n"
-  "  component: \"/main/snake/food/scr_factory_snake_food.script\"\n"
+  "  component: \"/main/game/snake/food/scr_factory_snake_food.script\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"
@@ -259,7 +259,7 @@ embedded_instances {
   "embedded_components {\n"
   "  id: \"factory\"\n"
   "  type: \"factory\"\n"
-  "  data: \"prototype: \\\"/main/snake/food/go_snake_food.go\\\"\\n"
+  "  data: \"prototype: \\\"/main/game/snake/food/go_snake_food.go\\\"\\n"
   "load_dynamically: false\\n"
   "\"\n"
   "  position {\n"
@@ -296,7 +296,7 @@ embedded_instances {
   id: "go_gui"
   data: "components {\n"
   "  id: \"main\"\n"
-  "  component: \"/main/main.gui\"\n"
+  "  component: \"/main/game/main.gui\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"
@@ -332,9 +332,44 @@ embedded_instances {
   data: "embedded_components {\n"
   "  id: \"factory\"\n"
   "  type: \"factory\"\n"
-  "  data: \"prototype: \\\"/main/snake/go_snake_body.go\\\"\\n"
+  "  data: \"prototype: \\\"/main/game/snake/go_snake_body.go\\\"\\n"
   "load_dynamically: false\\n"
   "\"\n"
+  "  position {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "  }\n"
+  "  rotation {\n"
+  "    x: 0.0\n"
+  "    y: 0.0\n"
+  "    z: 0.0\n"
+  "    w: 1.0\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  }
+  rotation {
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 1.0
+  }
+  scale3 {
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  }
+}
+embedded_instances {
+  id: "go_misc"
+  data: "components {\n"
+  "  id: \"misc\"\n"
+  "  component: \"/main/game/misc.script\"\n"
   "  position {\n"
   "    x: 0.0\n"
   "    y: 0.0\n"

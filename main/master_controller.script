@@ -1,0 +1,53 @@
+local game_target = "#game"
+local game_menu_target = "#game_menu"
+local main_menu_target = "#main_menu"
+
+function init(self)
+    msg.post(".", "acquire_input_focus")
+    msg.post(main_menu_target, "load")
+
+    self.game_is_loaded = false
+    self.game_menu_is_loaded = false
+    self.main_menu_is_loaded = false
+end
+
+function final(self)
+    msg.post(".", "release_input_focus")
+end
+
+function on_message(self, message_id, message, sender)
+    if message_id == hash("show_game") and self.game_is_loaded == false then
+        msg.post(game_target, "load")
+        msg.post(main_menu_target, "unload")
+        -- [NOTE] make sure the time_step is reset. There is a situation where you 
+        -- could reset the game and start from the main menu and the time step
+        -- is still set to zero, which makes the game unplayable until a restart
+        msg.post(game_target, "set_time_step", { factor = 1, mode = 1 })
+        self.game_is_loaded = true
+        self.main_menu_is_loaded = false
+    elseif message_id == hash("restart_game") then
+        msg.post("game:/go_snake#snake", "game_restart")
+        msg.post(game_target, "set_time_step", { factor = 1, mode = 1 })
+        msg.post(game_menu_target, "unload")
+    elseif message_id == hash("show_main_menu") then
+        msg.post(main_menu_target, "load")
+        msg.post(game_target, "unload")
+        msg.post(game_menu_target, "unload")
+        self.main_menu_is_loaded = true
+        self.game_is_loaded = false
+        self.game_menu_is_loaded = false
+    elseif message_id == hash("show_game_menu") and self.game_menu_is_loaded == false then
+        msg.post(game_menu_target, "load")
+        msg.post(game_target, "set_time_step", { factor = 0.0, mode = 1 })
+        self.game_menu_is_loaded = true
+    elseif message_id == hash("hide_game_menu") and self.game_menu_is_loaded == true then
+        msg.post(game_menu_target, "unload")
+        msg.post(game_target, "set_time_step", { factor = 1, mode = 1 })
+        self.game_menu_is_loaded = false
+    elseif message_id == hash("proxy_loaded") then
+        -- print("proxy_loaded", sender)
+        msg.post(sender, "enable")
+    elseif message_id == hash("proxy_unloaded") then
+        -- print("proxy_unloaded", sender)
+    end
+end

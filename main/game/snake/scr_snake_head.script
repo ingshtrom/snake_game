@@ -96,6 +96,7 @@ function final(self)
 end
 
 function update(self, dt)
+	print("update() with timestep (dt) " .. dt)
 	if self.should_add_body_part then
 		for i=1,body_parts_to_add,1 do
 			local pos = go.get_position()

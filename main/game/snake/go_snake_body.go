@@ -1,6 +1,6 @@
 components {
-  id: "scr_snake_food"
-  component: "/main/snake/food/scr_snake_food.script"
+  id: "controller"
+  component: "/main/game/snake/scr_snake_body.script"
   position {
     x: 0.0
     y: 0.0
@@ -15,22 +15,7 @@ components {
 }
 components {
   id: "particles"
-  component: "/main/snake/food/pfx_snake_food.particlefx"
-  position {
-    x: 0.0
-    y: 0.0
-    z: 2.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-}
-components {
-  id: "particles_main"
-  component: "/main/snake/food/pfx_snake_food_main.particlefx"
+  component: "/main/game/snake/pfx_snake_body.particlefx"
   position {
     x: 0.0
     y: 0.0
@@ -49,9 +34,9 @@ embedded_components {
   data: "collision_shape: \"\"\n"
   "type: COLLISION_OBJECT_TYPE_KINEMATIC\n"
   "mass: 0.0\n"
-  "friction: 0.0\n"
+  "friction: 0.1\n"
   "restitution: 0.5\n"
-  "group: \"food\"\n"
+  "group: \"snake_body\"\n"
   "mask: \"snake\"\n"
   "embedded_collision_shape {\n"
   "  shapes {\n"
@@ -70,7 +55,7 @@ embedded_components {
   "    index: 0\n"
   "    count: 1\n"
   "  }\n"
-  "  data: 32.0\n"
+  "  data: 10.0\n"
   "}\n"
   "linear_damping: 0.0\n"
   "angular_damping: 0.0\n"
