@@ -1,7 +1,3 @@
 function init(self)
 	particlefx.play("#particles")
 end
-
-function update()
-	print(go.get_id(), go.get_scale_uniform())
-end

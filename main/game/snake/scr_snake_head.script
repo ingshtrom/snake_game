@@ -1,6 +1,7 @@
 local start_speed = 150
 local speed_increment = 10
 local body_parts_to_add = 5
+local default_rot = vmath.quat_rotation_z(math.atan2(0, 1))
 
 local function dump(o)
    if type(o) == 'table' then
@@ -103,7 +104,6 @@ function final(self)
 end
 
 function update(self, dt)
-	print("update() with timestep (dt) " .. dt)
 	if self.should_add_body_part then
 		for i=1,body_parts_to_add,1 do
 			local pos = go.get_position()
@@ -115,7 +115,7 @@ function update(self, dt)
 			else
 				pos = pos + (-16 * dir)
 			end
-			local new_body_part_id = factory.create('go_factory_snake_body#factory', pos, nil, nil, 0.5)
+			local new_body_part_id = factory.create('go_factory_snake_body#factory', pos, default_rot, nil, 0.5)
 			local new_body_part = {
 				id = new_body_part_id,
 				dir = dir,
