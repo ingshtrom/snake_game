@@ -15,6 +15,12 @@ local function dump(o)
    end
 end
 
+local function update_rotation(self, normalized_direction)
+	local rad = math.atan2(normalized_direction.y, normalized_direction.x)
+	local rot = vmath.quat_rotation_z(rad)
+	go.set_rotation(rot)
+end
+
 local function are_vectors_equal(v1, v2)
 	local x_equal = (v1.x - v2.x) == 0
 	local y_equal = (v1.y - v2.y) == 0
@@ -46,6 +52,7 @@ local function initialize(self)
 	self.accumulator = 0
 	self.should_add_body_part = false
 	go.set_position(vmath.vector3(400, 400, 0))
+	update_rotation(self, self.dir)
 end
 
 function init(self)
@@ -134,6 +141,7 @@ function update(self, dt)
 				-- determine if they are in the same direction
 				if are_vectors_equal(self.dir, normalized_input) == false then
 					update_pivot_points(self, prev_pos, normalized_input)
+					update_rotation(self, normalized_input)
 				end
 
 				self.dir = normalized_input
