@@ -1,7 +1,7 @@
 emitters {
   id: "emitter"
   mode: PLAY_MODE_LOOP
-  duration: 0.1
+  duration: 1.0
   space: EMISSION_SPACE_WORLD
   position {
     x: 0.0
@@ -71,7 +71,7 @@ emitters {
       t_x: 1.0
       t_y: 0.0
     }
-    spread: 0.05
+    spread: 0.0
   }
   properties {
     key: EMITTER_KEY_PARTICLE_SPEED
@@ -249,7 +249,7 @@ emitters {
     key: PARTICLE_KEY_ANGULAR_VELOCITY
     points {
       x: 0.0
-      y: 1.0
+      y: 0.0
       t_x: 1.0
       t_y: 0.0
     }
@@ -259,39 +259,4 @@ emitters {
   duration_spread: 0.0
   stretch_with_velocity: false
   start_offset: 0.0
-}
-modifiers {
-  type: MODIFIER_TYPE_VORTEX
-  use_direction: 0
-  position {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-  }
-  rotation {
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 1.0
-  }
-  properties {
-    key: MODIFIER_KEY_MAGNITUDE
-    points {
-      x: 0.0
-      y: 100.0
-      t_x: 1.0
-      t_y: 0.0
-    }
-    spread: 0.0
-  }
-  properties {
-    key: MODIFIER_KEY_MAX_DISTANCE
-    points {
-      x: 0.0
-      y: 20.0
-      t_x: 1.0
-      t_y: 0.0
-    }
-    spread: 0.0
-  }
 }
